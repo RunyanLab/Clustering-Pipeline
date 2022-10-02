@@ -32,7 +32,12 @@ warning('off','all')
 if ismac
     redcell_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/suite2p-redcells/plane0/Fall.mat');
 else
-    redcell_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
+    if servernum==2
+        redcell_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
+    elseif servernum==3
+        redcell_directory= strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
+    end
+
 end 
 
 rcFall=load(redcell_directory);
@@ -44,7 +49,12 @@ redcell_idx=redcells==1;
 if ismac
     base_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/suite2p/plane0/Fall.mat');
 else
-    base_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
+    if servernum==2
+        base_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
+    elseif servernum==3
+        base_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
+    end
+
 end 
 
 
@@ -56,7 +66,13 @@ Fall = load(base_directory);%('Y:\Connie\2p_results\EC1-1R\2021-10-27\suite2p\pl
 if ismac
     wsbase_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/Fall.mat');
 else
-    wsbase_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
+    if servernum==2
+        wsbase_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
+    elseif servernum==3
+        wsbase_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
+    end
+
+
 end 
 
 

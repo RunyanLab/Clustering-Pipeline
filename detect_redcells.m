@@ -1,8 +1,10 @@
-function[]= detect_redcells(longImage,shortImage,thirdImage,img_thresholds,redcell_vect,cell_stat,xshift,yshift,percent)
+function[edge_excluded]= detect_redcells(longImage,shortImage,thirdImage,img_thresholds,redcell_vect,cell_stat,xshift,yshift,percent)
 
 % this function takes 3 images and plots cells that are currently
 % classified as green 
 all_cellocs=nan(512,512,length(cell_stat));
+
+edge_excluded=zeros(length(cell_stat),1); 
 
 for i = 1 : length(cell_stat)
     
@@ -18,8 +20,14 @@ for i = 1 : length(cell_stat)
              mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
              
       end
-    all_cellocs(:,:,i)=mask;
+      if size(mask,1)>512 || size(mask,2)>512
+          all_cellocs(:,:,i)=nan(512,512); 
+          edge_excluded(i)=1; 
+      else
+          all_cellocs(:,:,i)=mask;
+      end
 
+    
 end
 
 %% GET POTENTIALLY RED CELLS
