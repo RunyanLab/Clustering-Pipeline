@@ -17,7 +17,10 @@ for i = 1 : length(cell_stat)
       for k=1:length(xpix)
              curxpix=xpix(k);
              curypix=ypix(k);
-             mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
+             if curxpix>0 && curypix>0
+                mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
+             end
+
              
       end
       if size(mask,1)>512 || size(mask,2)>512

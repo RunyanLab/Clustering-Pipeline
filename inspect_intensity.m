@@ -45,7 +45,7 @@ plot(normc(selected_intensities))
 
 xticks(1:numpocks:size(intensities,2))
 xticklabels(flatindentities(1:numpocks:end))
-xline(1:numpocks:size(intensities,2))
+xline(1:numpocks:size(intensities,2),"HandleVisibility",'off')
 legend(leg);
 
 

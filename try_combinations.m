@@ -10,8 +10,7 @@ alpha=nan(length(ranked_combinations)/6,1);
 beta=nan(length(ranked_combinations)/6,1);
 mu=nan(length(ranked_combinations)/6,1);
 
-
-
+centroids= cell(length(ranked_combinations)/6,1); 
 
 for i = 1:length(combos)
     combos{i}=ranked_combinations(1+(i-1)*6).index; 
@@ -25,13 +24,13 @@ for i = 1:length(combos)
     cur_intensities=intensities(:,combos{i});
     norm_cur_intensities=normr(cur_intensities);
     
-    [ident,centroids,sumd,alldistances]= kmeans(norm_cur_intensities, 2,'Replicates',100,'MaxIter',10000);
+    [ident,cur_centroids,sumd,alldistances]= kmeans(norm_cur_intensities, 2,'Replicates',100,'MaxIter',10000);
     cur_sils=get_silhouettes(alldistances,ident);
     all_silhouettes{i}=cur_sils;    
     mean_silhouettes(i)=mean(cur_sils);
-    all_centroids{i}=centroids; 
+    all_centroids{i}=cur_centroids; 
     
-    if centroids(2,1) > centroids(1,1)
+    if cur_centroids(2,1) > cur_centroids(1,1)
         for j=1:length(ident)
             if ident(j)==1
                 ident(j)=2;
@@ -53,6 +52,7 @@ for i = 1:length(combos)
     
     identities{i}=ident;
     sumds{i}=sumd;
+    centroids{i}=cur_centroids;
 
   
 

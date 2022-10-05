@@ -1,9 +1,9 @@
 %% 1. ENTER DATASET INFORMATION
 mouse = 'EC3-1L';
-date = '2021-12-10';
+date = '2021-12-09';
 servernum=2;
 xtrafolder='no';
-pockels=300:100:700; 
+pockels=200:100:700; 
 subset_pockels=1:length(pockels); % vector of pockels to actually include in clustering 
 
 wavelengths= 780:20:1100;wavelengths([13,15])=[];
@@ -37,18 +37,18 @@ check_shift(redcell_vect,cell_stat,wsFall.ops.meanImg,Fall.ops.meanImg_chan2,xsh
 % * plots all of the green masks that have over a certain mean threshold 
 
 img_thresholds=[3,4,5]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
-excluded_vect=detect_redcells(longImage,shortImage,sum_proj,img_thresholds,redcell_vect,cell_stat,xshift,yshift,25)% Threshold is end argument and is a percentage 
+edge_excluded=detect_redcells(longImage,shortImage,sum_proj,img_thresholds,redcell_vect,cell_stat,xshift,yshift,25)% Threshold is end argument and is a percentage 
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
-toadd= [270 21 265 360 304 325 187];
+toadd= [200 45 17 27 68 171 264] ;
 uncertain=[];
-tosubtract=[];
+tosubtract=[52];
 
 
 [final_red_vect]=add_redcells(redcell_vect,toadd);
 [final_red_vect]=sub_redcells(final_red_vect,tosubtract);
 
-thresholds=[2 3]; %change for 
+thresholds=[5 5]; %change for 
 check_redcells(final_red_vect,cell_stat,shortImage,longImage,thresholds,xshift,yshift)
 
 %% 7. RESTRICT MASKS, GET INTENSITIES, AND AVERAGE ACROSS POWERS
@@ -60,20 +60,20 @@ subset=1:length(pockels); % subset is an argument to take only certain pockels i
 %% 8. DO CLUSTERING ON FULL DATA AND ON COMBINATIONS OF DATA 
 
 [identities,centroids,sumds,all_silhouettes,mean_silhouettes,combos]=try_combinations(ranked_combinations,meanwave_intensities);
-[full_ident,centroids,sumd,alldistances,silhouettes,used_intensities] = cluster_masks (wsRef,meanwave_intensities,red_cellocs, 2,[mouse,' ',date,'  all wavelengths'],flatwave_identities,'normr','wavelength',pockels,wavelengths,final_red_vect,combos);
+[full_ident,full_centroids,sumd,alldistances,silhouettes,used_intensities] = cluster_masks (wsRef,meanwave_intensities,red_cellocs, 2,[mouse,' ',date,'  all wavelengths'],flatwave_identities,'normr','wavelength',pockels,wavelengths,final_red_vect,combos);
 plot_combination_cluster_performance(all_silhouettes,combos,identities,full_ident,wave_identities,mouse,date) 
 plot_cluster_performance (silhouettes,mouse,date,'no','normr')
 
 %% 9. EXAMINE OUTLIERS WITH SILHOUETTE SCORES BELOW THRESHOLD 
-chosen_combination=10; % you can choose from the 16 combinations to see which you want to plot 
+chosen_combination=14; % you can choose from the 16 combinations to see which you want to plot 
 
-examine_outliers(cell_stat,final_red_vect,meanwave_intensities,all_silhouettes{chosen_combination},.7,centroids,['outliers:',mouse,date],flatwave_identities,identities{chosen_combination})
+examine_outliers(cell_stat,final_red_vect,meanwave_intensities(:,combos{chosen_combination}),all_silhouettes{chosen_combination},.7,centroids{chosen_combination},['outliers:',mouse,date],flatwave_identities,identities{chosen_combination})
 
 %% 10. EXCLUDE CELLS, GET FINAL VECTORS TO PUT IN STRUCTURE 
 
-exclude_redids=[74];
+exclude_redids=[16 28];
 
-[final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,final_red_vect,full_ident,meanwave_intensities,silhouettes,Fall.iscell(:,1)); 
+[final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,final_red_vect,identities{chosen_combination},meanwave_intensities,silhouettes,Fall.iscell(:,1)); 
 [final_ids]=make_final_ids(final_red_vect_ex,final_ident); 
 Fall.red_cell_vect=final_red_vect_ex;
 
@@ -88,8 +88,14 @@ clustering_info.combinations=combos;
 clustering_info.Fall=Fall;
 clustering_info.chosen_combination=chosen_combination; 
 clustering_info.iscell=final_iscell; 
+clustering_info.intensities=intensities;
+clustering_info.all_identities=identities; 
+clustering_info.uncertain=uncertain; 
+
 %% 12. FINAL CHECK 
-check_redcells(final_red_vect,cell_stat,shortImage,sum_proj,xshift,yshift)
+
+check_redcells(final_red_vect,cell_stat,shortImage,longImage,thresholds,xshift,yshift)
+
 
 %% 13. SAVE STRUCTURE 
 save(['Y:\Christian\Processed Data\dual_red\',mouse,'_',date],'clustering_info')

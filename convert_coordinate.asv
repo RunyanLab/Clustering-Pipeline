@@ -27,7 +27,7 @@ s2plist_red=s2plist_cells(cellist_red);%s2p coordinates where isred==1
 
 for i = 1:length(idx)
     if strcmp(conv_type,'s2c')
-        converted_coord(i)= find(s2plist_cells==idx); % s2p => iscell 
+        converted_coord(i)= s2plist_cells(idx); % s2p => iscell 
     
     elseif strcmp(conv_type,'s2r')
         temp=s2plist_cells(idx); %to get to iscell

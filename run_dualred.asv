@@ -1,12 +1,13 @@
 %% 1. ENTER DATASET INFORMATION
-mouse = 'FU1-00';
-date = '2022-05-30';
+mouse = 'EC3-1L';
+date = '2021-12-10';
 servernum=2;
 xtrafolder='no';
 pockels=300:100:700; 
 subset_pockels=1:length(pockels); % vector of pockels to actually include in clustering 
 
 wavelengths= 780:20:1100;wavelengths([13,15])=[];
+
 
 [~, wave_ids,flatidentities] = p_w_identities(pockels,wavelengths,'delete13/15');
 load('wave_identities.mat')
@@ -36,10 +37,10 @@ check_shift(redcell_vect,cell_stat,wsFall.ops.meanImg,Fall.ops.meanImg_chan2,xsh
 % * plots all of the green masks that have over a certain mean threshold 
 
 img_thresholds=[3,4,5]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
-detect_redcells(longImage,shortImage,sum_proj,img_thresholds,redcell_vect,cell_stat,xshift,yshift,25)% Threshold is end argument and is a percentage 
+edge_excluded=detect_redcells(longImage,shortImage,sum_proj,img_thresholds,redcell_vect,cell_stat,xshift,yshift,15);% Threshold is end argument and is a percentage 
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
-toadd= [270 21 265 360 304 325 187];
+toadd= [79 152 43] ;
 uncertain=[];
 tosubtract=[];
 
@@ -70,7 +71,7 @@ examine_outliers(cell_stat,final_red_vect,meanwave_intensities,all_silhouettes{c
 
 %% 10. EXCLUDE CELLS, GET FINAL VECTORS TO PUT IN STRUCTURE 
 
-exclude_redids=[74];
+exclude_redids=[];
 
 [final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,final_red_vect,full_ident,meanwave_intensities,silhouettes,Fall.iscell(:,1)); 
 [final_ids]=make_final_ids(final_red_vect_ex,final_ident); 
@@ -87,8 +88,12 @@ clustering_info.combinations=combos;
 clustering_info.Fall=Fall;
 clustering_info.chosen_combination=chosen_combination; 
 clustering_info.iscell=final_iscell; 
+clustering_info.intensities=intensities; 
+clustering_info.
 %% 12. FINAL CHECK 
-check_redcells(final_red_vect,cell_stat,shortImage,sum_proj,xshift,yshift)
+
+check_redcells(final_red_vect,cell_stat,shortImage,longImage,thresholds,xshift,yshift)
+
 
 %% 13. SAVE STRUCTURE 
 save(['Y:\Christian\Processed Data\dual_red\',mouse,'_',date],'clustering_info')
