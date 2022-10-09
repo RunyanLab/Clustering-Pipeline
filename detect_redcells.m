@@ -83,14 +83,14 @@ title('long wavelength image')
 %% SHORT IMAGE
 
 subplot(1,3,2)
-plot_mask_boundaries(longImage,img_thresholds(2),check_stat,check_green,'g',xshift,yshift)
+plot_mask_boundaries(shortImage,img_thresholds(2),check_stat,check_green,'g',xshift,yshift)
 
 title('short wavelength image')
 
 %% OTHER IMAGE
 subplot(1,3,3)
 
-plot_mask_boundaries(longImage,img_thresholds(3),check_stat,check_green,'g',xshift,yshift)
+plot_mask_boundaries(thirdImage,img_thresholds(3),check_stat,check_green,'g',xshift,yshift)
 
 title('third image')
 

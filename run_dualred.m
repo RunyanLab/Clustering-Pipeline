@@ -1,6 +1,6 @@
 %% 1. ENTER DATASET INFORMATION
-mouse = 'EC3-1L';
-date = '2021-12-09';
+mouse = 'EC1-1R';
+date = '2021-11-05';
 servernum=2;
 xtrafolder='no';
 pockels=200:100:700; 
@@ -36,19 +36,19 @@ check_shift(redcell_vect,cell_stat,wsFall.ops.meanImg,Fall.ops.meanImg_chan2,xsh
 % * this is a to check that you haven't left out any red cells in your s2p red_cells file 
 % * plots all of the green masks that have over a certain mean threshold 
 
-img_thresholds=[3,4,5]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
-edge_excluded=detect_redcells(longImage,shortImage,sum_proj,img_thresholds,redcell_vect,cell_stat,xshift,yshift,25)% Threshold is end argument and is a percentage 
+img_thresholds=[7 7 7]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
+[~]=detect_redcells(longImage,shortImage,sum_proj,img_thresholds,redcell_vect,cell_stat,xshift,yshift,10);% Threshold is end argument and is a percentage 
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
-toadd= [200 45 17 27 68 171 264] ;
-uncertain=[];
-tosubtract=[52];
+toadd= [152 29 7 79 190 38 182 18 36 106 122] ;
+uncertain=[38 79];
+tosubtract=[];
 
 
 [final_red_vect]=add_redcells(redcell_vect,toadd);
 [final_red_vect]=sub_redcells(final_red_vect,tosubtract);
 
-thresholds=[5 5]; %change for 
+thresholds=[8 8]; %change for 
 check_redcells(final_red_vect,cell_stat,shortImage,longImage,thresholds,xshift,yshift)
 
 %% 7. RESTRICT MASKS, GET INTENSITIES, AND AVERAGE ACROSS POWERS
@@ -71,7 +71,7 @@ examine_outliers(cell_stat,final_red_vect,meanwave_intensities(:,combos{chosen_c
 
 %% 10. EXCLUDE CELLS, GET FINAL VECTORS TO PUT IN STRUCTURE 
 
-exclude_redids=[16 28];
+exclude_redids=[];
 
 [final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,final_red_vect,identities{chosen_combination},meanwave_intensities,silhouettes,Fall.iscell(:,1)); 
 [final_ids]=make_final_ids(final_red_vect_ex,final_ident); 
