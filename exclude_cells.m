@@ -1,4 +1,4 @@
-function[final_red_vect,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(red_ids_to_exclude,final_red_vect,final_ident,final_intensities,final_silhouettes,iscell)
+function[final_red_vect,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(red_ids_to_exclude,final_red_vect,final_ident,final_intensities,final_silhouettes,iscell,Fall)
 
 %% function that will exclude cells from all variables used in procesing 
 
@@ -11,7 +11,17 @@ final_ident(red_ids_to_exclude,:)=[];
 final_intensities(red_ids_to_exclude,:)=[];
 final_silhouettes(red_ids_to_exclude,:)=[];
 
-iscell(cellids_to_exclude)=0;
+
+s2pidstoexclude=nan(length(red_ids_to_exclude),1);
+
+
+for i = 1:length(cellids_to_exclude)
+    s2pidstoexclude(i)=convert_coordinate(cellids_to_exclude(i),'c2s',Fall);
+end
+
+
+
+iscell(s2pidstoexclude)=0;
 
 final_iscell=iscell;
 

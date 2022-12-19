@@ -14,7 +14,7 @@ load('wave_identities.mat')
 load("ranked_combinations.mat")
 load('combos.mat')
 %% 2. LOAD RED_WAVELENGTH_STACK, FALL.MAT, MANUAL RED CELL SELECTION
-[red_wavelength_stack,Fall,redcell_vect_init,wsImage,wsFall] = load_reg_tif_wavelength_rev(mouse,date,pockels,780:20:1100,xtrafolder,servernum);
+[red_wavelength_stack,Fall,redcell_vect_init,wsImage,wsFall,rcFall,mcherry_coords,tdtom_coords,mcherry_spectra,tdtom_spectra] = load_reg_tif_wavelength_rev(mouse,date,pockels,780:20:1100,xtrafolder,servernum);
 
 %% 3. GET ISCELL COORDINATES/ GET IMAGES
 %the coordinates for cells are in reference to just those classified as
@@ -29,6 +29,7 @@ Fall.red_cell_vect=redcell_vect;
 % registration is different between w-series s2p file and functional s2p
 % file, so need to correct for where masks are located 
 
+%
 [xshift,yshift]=shift_wseries(wsRef,fRef);
 check_shift(redcell_vect,cell_stat,wsFall.ops.meanImg,Fall.ops.meanImg_chan2,xshift,yshift) % make sure that re-registration is effective
 
@@ -36,25 +37,25 @@ check_shift(redcell_vect,cell_stat,wsFall.ops.meanImg,Fall.ops.meanImg_chan2,xsh
 % * this is a to check that you haven't left out any red cells in your s2p red_cells file 
 % * plots all of the green masks that have over a certain mean threshold 
 
-img_thresholds=[7 7 7]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
+img_thresholds=[16 10 16]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
 [~]=detect_redcells(longImage,shortImage,sum_proj,img_thresholds,redcell_vect,cell_stat,xshift,yshift,10);% Threshold is end argument and is a percentage 
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
-toadd= [152 29 7 79 190 38 182 18 36 106 122] ;
-uncertain=[38 79];
+toadd= [7 18 29 36 38 152 190 122 106] ;
+uncertain=[190];
 tosubtract=[];
 
 
 [final_red_vect]=add_redcells(redcell_vect,toadd);
 [final_red_vect]=sub_redcells(final_red_vect,tosubtract);
 
-thresholds=[8 8]; %change for 
+thresholds=[ 15 13]; %change for 
 check_redcells(final_red_vect,cell_stat,shortImage,longImage,thresholds,xshift,yshift)
 
 %% 7. RESTRICT MASKS, GET INTENSITIES, AND AVERAGE ACROSS POWERS
 subset=1:length(pockels); % subset is an argument to take only certain pockels if there are any  
 
-[intensities,red_cellocs]= partialmask_intensities(66,cell_stat,red_wavelength_stack,final_red_vect,max_proj,xshift,yshift);
+[intensities,red_cellocs]= partialmask_intensities(50,cell_stat,red_wavelength_stack,final_red_vect,max_proj,xshift,yshift);
 [meanwave_intensities,medwave_intensities,flatwave_identities]=avg_acrosspocks(intensities,length(pockels),wavelengths,subset); 
 
 %% 8. DO CLUSTERING ON FULL DATA AND ON COMBINATIONS OF DATA 
@@ -73,7 +74,7 @@ examine_outliers(cell_stat,final_red_vect,meanwave_intensities(:,combos{chosen_c
 
 exclude_redids=[];
 
-[final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,final_red_vect,identities{chosen_combination},meanwave_intensities,silhouettes,Fall.iscell(:,1)); 
+[final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,final_red_vect,identities{chosen_combination},meanwave_intensities,silhouettes,Fall.iscell(:,1),Fall); 
 [final_ids]=make_final_ids(final_red_vect_ex,final_ident); 
 Fall.red_cell_vect=final_red_vect_ex;
 
@@ -98,5 +99,5 @@ check_redcells(final_red_vect,cell_stat,shortImage,longImage,thresholds,xshift,y
 
 
 %% 13. SAVE STRUCTURE 
-save(['Y:\Christian\Processed Data\dual_red\',mouse,'_',date],'clustering_info')
+save(['Y:\Christian\Processed Data\dual_red\',mouse,'_',date,'.mat'],'clustering_info','-v7.3')
 

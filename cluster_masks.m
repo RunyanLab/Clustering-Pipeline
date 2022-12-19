@@ -4,6 +4,7 @@ numwaves=length(cluster_waves);
 
 cell_idx=1:length(red_vect);
 
+%% CHOOSE METHOD OF NORMALIZATION
 red_idx=cell_idx(red_vect);
 % intensities should be selected 
 norm_intensities=nan(size(intensities,1),size(intensities,2));
@@ -33,7 +34,7 @@ end
 
 
 [ident,centroids,sumd,alldistances]= kmeans(norm_intensities, nclust,'Replicates',100,'MaxIter',10000);
-%% output silhouette scores
+%% OUTPUT SILHOUETTE SCORES
 
 silhouettes=get_silhouettes(alldistances,ident);
 

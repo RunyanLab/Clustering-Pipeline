@@ -23,7 +23,9 @@ for i = 1 : numred
       for k=1:length(xpix)
              curxpix=xpix(k);
              curypix=ypix(k);
-             mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
+             if curxpix <512 && curypix<512
+                mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
+             end
              
       end
     red_cellocs(:,:,i)=mask;

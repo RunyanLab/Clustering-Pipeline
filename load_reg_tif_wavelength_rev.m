@@ -1,4 +1,4 @@
-function [red_wavelength_stack,Fall,redcell_idx,wsImage,wsFall] = load_reg_tif_wavelength_rev(mouse,date,pockels,wavelengths,xtrafolder,servernum)
+function [red_wavelength_stack,Fall,redcell_idx,wsImage,wsFall,rcFall,mcherry_coords,tdtom_coords,mcherry_spectra,tdtom_spectra] = load_reg_tif_wavelength_rev(mouse,date,pockels,wavelengths,xtrafolder,servernum)
 warning('off','all')
 
 % LOAD_REG_TIF_WAVELENGTH loads suite2p registered tifs saved inside
@@ -9,41 +9,26 @@ warning('off','all')
 %REV indicates that the red_wavelenghth_stack is organized taking all
 %wavelengths at one pockel 
 %% first handle loading spectra, giving coordinates
-% if ismac
-%     mcherry_spectra=readtable('/Volumes/Runyan2/Christian/Code/PC_control data/mcherry_spectra.csv');
-%     tdtom_spectra=readtable('/Volumes/Runyan2/Christian/Code/PC_control data/tdtomato_spectra.csv');
-% else
-%     mcherry_spectra=readtable('Y:\Christian\Code\PC_control data\mcherry_spectra.csv');
-%     tdtom_spectra=readtable('Y:\Christian\Code\PC_control data\tdtomato_spectra.csv');
-% end
-% 
-% 
-% tdtom_coords=nan(2,length(wavelengths));
-% mcherry_coords=nan(2,length(wavelengths));
-% 
-% for i=1:length(wavelengths)
-%     tdtom_coords(1,i)=find(tdtom_spectra.wavelength==wavelengths(i));
-%     mcherry_coords(1,i)=find(tdtom_spectra.wavelength==wavelengths(i));
-%     tdtom_coords(2,i)=tdtom_spectra.tdTomato2p(tdtom_coords(1,i));
-%     mcherry_coords(2,i)=mcherry_spectra.mCherry2p(mcherry_coords(1,i));
-% end
-%% Load load rcFall 
-
 if ismac
-    redcell_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/suite2p-redcells/plane0/Fall.mat');
+    mcherry_spectra=readtable('/Volumes/Runyan2/Christian/Code/PC_control data/mcherry_spectra.csv');
+    tdtom_spectra=readtable('/Volumes/Runyan2/Christian/Code/PC_control data/tdtomato_spectra.csv');
 else
-    if servernum==2
-        redcell_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
-    elseif servernum==3
-        redcell_directory= strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
-    end
+    mcherry_spectra=readtable('Y:\Christian\Code\PC_control data\mcherry_spectra.csv');
+    tdtom_spectra=readtable('Y:\Christian\Code\PC_control data\tdtomato_spectra.csv');
+end
 
-end 
 
-rcFall=load(redcell_directory);
+tdtom_coords=nan(2,length(wavelengths));
+mcherry_coords=nan(2,length(wavelengths));
 
-redcells=rcFall.iscell; 
-redcell_idx=redcells==1; 
+for i=1:length(wavelengths)
+    tdtom_coords(1,i)=find(tdtom_spectra.wavelength==wavelengths(i));
+    mcherry_coords(1,i)=find(tdtom_spectra.wavelength==wavelengths(i));
+    tdtom_coords(2,i)=tdtom_spectra.tdTomato2p(tdtom_coords(1,i));
+    mcherry_coords(2,i)=mcherry_spectra.mCherry2p(mcherry_coords(1,i));
+end
+
+
 
 %% load Fall for functional data 
 if ismac
@@ -60,6 +45,23 @@ end
 
 
 Fall = load(base_directory);%('Y:\Connie\2p_results\EC1-1R\2021-10-27\suite2p\plane0\Fall.mat');
+%% Load load rcFall 
+if ismac
+    redcell_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/suite2p-redcells/plane0/Fall.mat');
+else
+    if servernum==2
+        redcell_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
+    elseif servernum==3
+        redcell_directory= strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
+    end
+
+end 
+
+rcFall=load(redcell_directory);
+%%
+redcells=rcFall.iscell(:,1); 
+redcells(Fall.iscell(:,1)==0)= 0; 
+redcell_idx=redcells==1; 
 
 
 %% load wsFall 
@@ -80,7 +82,7 @@ wsFall=load(wsbase_directory);
 
 
 try
-    wsImage=wsFall.ops.meanImg_chan2_corrected;
+    wsImage=wsFall.ops.meanImg_chan2;
 catch
     wsImage=wsFall.ops.meanImgE;
 end
@@ -178,16 +180,5 @@ summed_image = summed_image./max(summed_image(:));
 shortwv_image=squeeze(sum(all_image(1:10,:,:),1));
 shortwv_image=shortwv_image./max(shortwv_image(:));
 % 
-% figure(99)
-% clf
-% imagesc(summed_image)
-% %axis image
-% %colormap gray
-% caxis([0 .15])
-% %set(99,'position',[1011 141 1401 1048])
-% colorbar
-% % set(colorbar,'visible','off')
-% % set(gca,'xticklabel',{[]})
-% % set(gca,'yticklabel',{[]})
-% % set(gca,'LooseInset',get(gca,'TightInset'));
+
 end
