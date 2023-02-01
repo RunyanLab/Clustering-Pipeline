@@ -1,11 +1,19 @@
-function[edge_excluded]= detect_redcells(longImage,shortImage,thirdImage,img_thresholds,redcell_vect,cell_stat,xshift,yshift,percent)
+function[]= detect_redcells(percent,img,img_thresholds,redcell_vect,cell_stat,shift)
 
-% this function takes 3 images and plots cells that are currently
-% classified as green 
+%% MAKE VARIABLEs
+xshift=shift(1); 
+yshift=shift(2); 
+
+longImage=img.long; 
+shortImage=img.short; 
+thirdImage=img.sum_proj; 
+
+
 all_cellocs=nan(512,512,length(cell_stat));
 
-edge_excluded=zeros(length(cell_stat),1); 
 
+
+%% GET MASKS
 for i = 1 : length(cell_stat)
     
     mask=zeros(512,512);
@@ -17,21 +25,17 @@ for i = 1 : length(cell_stat)
       for k=1:length(xpix)
              curxpix=xpix(k);
              curypix=ypix(k);
-             if curxpix>0 && curypix>0
+             if curxpix>0 && curypix>0 && curxpix<512 && curypix<512 % make sure pixel of mask is within frame after re-registration  
                 mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
              end
 
              
       end
-      if size(mask,1)>512 || size(mask,2)>512
-          all_cellocs(:,:,i)=nan(512,512); 
-          edge_excluded(i)=1; 
-      else
-          all_cellocs(:,:,i)=mask;
-      end
-
-    
+      
+      all_cellocs(:,:,i)=mask;
+       
 end
+
 
 %% GET POTENTIALLY RED CELLS
 %uses check_green_long and check_green_short to find candidates at each
@@ -73,7 +77,7 @@ check_green=union(check_green_short,check_green_long); % put together potential 
 
 check_stat=cell_stat(check_green); % make a reduced stat list of all the masks for the candidates 
 
-figure
+figure('Color','w')
 %% LONG IMAGE 
 subplot(1,3,1)
 plot_mask_boundaries(longImage,img_thresholds(1),check_stat,check_green,'g',xshift,yshift)

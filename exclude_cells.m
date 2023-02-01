@@ -1,4 +1,8 @@
-function[final_red_vect,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(red_ids_to_exclude,final_red_vect,final_ident,final_intensities,final_silhouettes,iscell,Fall)
+function[final_red_vect,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(red_ids_to_exclude,final_red_vect,final_ident,final_intensities,final_silhouettes,Fall)
+
+iscell=Fall.iscell(:,1); 
+
+
 
 %% function that will exclude cells from all variables used in procesing 
 

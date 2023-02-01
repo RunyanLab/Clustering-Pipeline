@@ -1,10 +1,8 @@
-function plot_cluster_performance (silhouettes,varargin)
+function plot_cluster_performance (silhouettes,info)
 
-mouse=varargin{1};
-date=varargin{2};
+mouse=info.mouse;
+date=info.date;
 
-xtrafolder=varargin{3};
-normalization=varargin{4};
 
 if length(xtrafolder)>1
     titlestr=[mouse,' ',date,' ',xtrafolder];

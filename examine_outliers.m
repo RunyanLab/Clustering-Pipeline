@@ -1,10 +1,16 @@
-function []=examine_outliers(cell_stat,red_vect,intensities,silhouettes,threshold,centroids,title,flatwave_identities,ident)
+function []=examine_outliers(cell_stat,red_vect,chosen_combination,threshold,intensities,info,flatwave_identities,combination_results)
 
-idvect=1:length(cell_stat); % 
-
+silhouettes=combination_results.all_silhouettes{chosen_combination}
 outliers=find(silhouettes<threshold);% find outliers in isred coordinates 
 
-inspect_intensity(outliers,find(red_vect==1),intensities,centroids,1,flatwave_identities,title,ident)
+
+centroids=combination_results.centroids{chosen_combination}; 
+ident=combination_results.identities{chosen_combination}; 
+
+flatwave_identities=flatwave_identities
+
+
+inspect_intensity(outliers,find(red_vect==1),intensities,centroids,flatwave_identities,info,ident)
 
 
 end

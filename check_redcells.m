@@ -1,15 +1,22 @@
-function[]= check_redcells(redcell_vect,cell_stat,shortImage,longImage,thresholds,xshift,yshift)
+function[]= check_redcells(redcell_vect,cell_stat,img,thresholds,shift)
+
+xshift=shift(1);
+yshift=shift(2); 
+
+
 
 cellstat_ids=1:length(cell_stat);
 
+
+%%
 figure
 
 
 subplot(1,2,1)
 %redcells on short image 
 
-imshow(shortImage)
-caxis([0 max(max(shortImage))/thresholds(1)])
+imshow(img.short)
+caxis([0 max(max(img.short))/thresholds(1)])
 hold on 
 
 red_stat=cell_stat(redcell_vect); 
@@ -107,8 +114,8 @@ title('Short Wavelength Image')
 subplot(1,2,2)
 %redcells on short image 
 
-imshow(longImage)
-caxis([0 max(max(longImage))/thresholds(2)])
+imshow(img.long)
+caxis([0 max(max(img.long))/thresholds(2)])
 
 
 hold on 

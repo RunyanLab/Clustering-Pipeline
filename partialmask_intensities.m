@@ -1,14 +1,15 @@
-function [intensities,red_cellocs]= partialmask_intensities(threshold,cell_stat,red_wavelength_stack,final_redidx,max_proj,xshift,yshift)
+function [intensities,red_cellocs]= partialmask_intensities(threshold,cell_stat,red_wavelength_stack,final_redidx,max_proj,shift)
 
 red_stat=cell_stat(final_redidx);
-
+xshift=shift(1); 
+yshift=shift(2); 
 
 numred=length(red_stat);
 red_cellocs=nan(512,512,numred);
 
 
 
-%% get full masks 
+%% GET FULL MASKS
 
 for i = 1 : numred
     
@@ -23,7 +24,7 @@ for i = 1 : numred
       for k=1:length(xpix)
              curxpix=xpix(k);
              curypix=ypix(k);
-             if curxpix <512 && curypix<512
+             if curxpix <512 && curypix<512 % if any pixels have been cutoff by re-registration, just dont include them 
                 mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
              end
              
@@ -31,7 +32,7 @@ for i = 1 : numred
     red_cellocs(:,:,i)=mask;
 
 end
-%% take subset of mask from max_proj
+%% TAKE CERTAIN PIXELS THAT ARE ABOVE THRESHOLD FROM THE MASK 
 
 max_locs=nan(512,512,numred);
 
@@ -43,12 +44,8 @@ for i =1:size(red_cellocs,3)
             max_locs(x,y,i)=max_proj(x,y);
         end
     end
-
-
     
     percentile=prctile(maxvals,threshold);
-
-
 
    for j = 1:512
       for k = 1:512
@@ -61,8 +58,6 @@ for i =1:size(red_cellocs,3)
 
 
 end
-
-
 
 %% make variables for intensities 
 npocks=size(red_wavelength_stack,1);
@@ -87,11 +82,7 @@ for idx = 1:length(red_stat)
         for w=1:nwaves
             curstack=squeeze(red_wavelength_stack(p,w,:,:));
             selectedvals=curstack(cellarea==1);
-            temp(p,w)=mean(selectedvals);
-            
-            
-            
-            
+            temp(p,w)=mean(selectedvals);            
         end
     end
     flat=temp(:);

@@ -1,4 +1,4 @@
-function plot_combination_cluster_performance(all_silhouettes,combinations,identities,full_ident,wave_identities,varargin) 
+function plot_combination_cluster_performance(combination_results,combinations,full_ident,wave_identities,info) 
 
 % function that takes combination of many silhouette distributions and
 % plots them together in a 4x4 histogram 
@@ -10,12 +10,15 @@ function plot_combination_cluster_performance(all_silhouettes,combinations,ident
 % identities: classified identites from each of the combinations 
 
 
+%% LOAD VARIABLES
 
-mouse=varargin{1};
-date=varargin{2};
+all_silhouettes=combination_results.all_silhouettes;
+identities=combination_results.identities; 
+mouse=info.mouse; 
+date=info.date;
 
-
-figure
+%% MAKE FIGURE
+figure('Color','w')
 
 
 subplotnum=16;
@@ -44,8 +47,7 @@ for i = 1:subplotnum
     stdev= std(all_silhouettes{i});
     text(min(histg.BinEdges),max(histg.Values)*.9,['average score: ',num2str(round(params(4),2))],'Color','r')
     text(min(histg.BinEdges),max(histg.Values)*.8,['standard dev: ',num2str(round(stdev,2))],'Color','r')
-    text(min(histg.BinEdges),max(histg.Values)*.6,['alpha: ',num2str(round(params(1),2))],'Color','r')
-    text(min(histg.BinEdges),max(histg.Values)*.5,['beta: ',num2str(round(params(2),2))],'Color','r')
+   
     text(min(histg.BinEdges),max(histg.Values)*.4,['mean Jaccard similarity: ',num2str(round(pairwise_similarity,2))],'Color','r')
     text(min(histg.BinEdges),max(histg.Values)*.3,['Jaccard similarity to full: ',num2str(round(getJaccard(identities{i}-1,full_ident-1),2))],'Color','r')
     
@@ -61,7 +63,7 @@ for i = 1:subplotnum
     
 
     xline(params(4),"LineWidth",2,'Color','r')
-    %xline(params(4)+stdev)
+    
     xline(params(4)-stdev)
     
    
@@ -71,22 +73,21 @@ for i = 1:subplotnum
 
 
 end
-
-figure
-for i = 1:subplotnum
-    subplot(4,4,i)
-    barg=bar(all_silhouettes{i});
-    xlabel('Cell Number')
-    ylabel('Silhouette Score')
-
-    strcell=wave_identities(combinations{i});
-    str=strcell{1};
-    for j=2:length(strcell)
-        str=[str,', ',strcell{j}];
-    end
-        
-    title(str)
-
-    %yline(average,'LineWidth',2,'Color','r')
-    %yline(average-stdev,'LineWidth',1,'color','k')
-end
+%% UNUSED FIGURE THAT SHOWS SILHOUETTE SCORE IN BAR GRAPH BY CELL IF NEEDED 
+% figure
+% for i = 1:subplotnum
+%     subplot(4,4,i)
+%     barg=bar(all_silhouettes{i});
+%     xlabel('Cell Number')
+%     ylabel('Silhouette Score')
+% 
+%     strcell=wave_identities(combinations{i});
+%     str=strcell{1};
+%     for j=2:length(strcell)
+%         str=[str,', ',strcell{j}];
+%     end
+%         
+%     title(str)
+% 
+%     
+% end

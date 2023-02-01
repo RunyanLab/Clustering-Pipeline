@@ -1,23 +1,18 @@
-function[identities,centroids,sumds,all_silhouettes,mean_silhouettes,combos]=try_combinations(ranked_combinations,intensities)
+function[combination_results]=try_combinations(combos,intensities)
 
-combos=cell(length(ranked_combinations)/6,1); 
-identities=cell(length(ranked_combinations)/6,1); 
-all_centroids=cell(length(ranked_combinations)/6,1); 
-sumds=cell(length(ranked_combinations)/6,1);
-all_silhouettes=cell(length(ranked_combinations)/6,1);
-mean_silhouettes=nan(length(ranked_combinations)/6,1);
-alpha=nan(length(ranked_combinations)/6,1);
-beta=nan(length(ranked_combinations)/6,1);
-mu=nan(length(ranked_combinations)/6,1);
+%% CREATE VARIABLES
 
-centroids= cell(length(ranked_combinations)/6,1); 
+identities=cell(length(combos),1); 
+all_centroids=cell(length(combos),1); 
+sumds=cell(length(combos),1);
+all_silhouettes=cell(length(combos),1);
+mean_silhouettes=nan(length(combos),1);
 
-for i = 1:length(combos)
-    combos{i}=ranked_combinations(1+(i-1)*6).index; 
-end
 
-%%
+centroids= cell(length(combos),1); 
 
+
+%% RUN K-MEANS USING EACH 
 
 for i = 1:length(combos)
 
@@ -39,23 +34,21 @@ for i = 1:length(combos)
             end
         end
         
-    end
-
-    %pd= fitdist(cur_sils,'Beta');
-
-    %alpha(i)=pd.a;
-    %beta(i)=pd.b;
-
-    pde=fitdist(1-cur_sils,'Exponential');
-
-    mu(i)=pde.mu;
-    
+    end    
     identities{i}=ident;
-    sumds{i}=sumd;
+    sumds{i}=sumd; 
     centroids{i}=cur_centroids;
 
-  
-
-
 end
+
+combination_results.identities=identities; 
+combination_results.sumds=sumds; 
+combinations_info.centroids=centroids; 
+combination_results.mean_silhouettes=mean_silhouettes; 
+combination_results.all_silhouettes=all_silhouettes; 
+combination_results.centroids=centroids; 
+end
+ 
+
+
 

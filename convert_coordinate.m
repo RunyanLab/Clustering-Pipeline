@@ -14,7 +14,7 @@ converted_coord=nan(length(idx),1);
 
 stat=Fall.stat;
 iscell=Fall.iscell(:,1);
-red_cell_vect=Fall.red_cell_vect;
+red_cell_vect=Fall.redcell_vect;
 
 s2p_all=1:length(stat); % s2p coordinates
 

@@ -1,120 +1,108 @@
-function [ident,centroids,sumd,alldistances,silhouettes,used_intensities] = cluster_masks (mean_image,intensities,cellocs, nclust,t,flatindentities,normalized,wave_pock,cluster_pocks,cluster_waves,red_vect,combos)
-numpocks=length(cluster_pocks);
-numwaves=length(cluster_waves);
+function [fullD_results] = cluster_masks (intensities,red_vect,flatwave_identities,info,img,red_cellocs)
+
+mean_image=img.sum_proj; % change if you want a different image 
+
+numpocks=length(info.pockels);
+numwaves=length(info.wavelengths);
+mouse=info.mouse;
+date=info.date; 
 
 cell_idx=1:length(red_vect);
 
-%% CHOOSE METHOD OF NORMALIZATION
+t=[mouse,' ',date,': All Wavelengths'];
+%% NORMALIZE INTENSITIES / RUN KMEANS
+
 red_idx=cell_idx(red_vect);
-% intensities should be selected 
+
 norm_intensities=nan(size(intensities,1),size(intensities,2));
 
-if strcmp(normalized,'normr')  
-   norm_intensities=normr(intensities);
-   
-elseif strcmp(normalized,'zscore')   
-    norm_intensities(:,:)=zscore(intensities,0,2);
+norm_intensities=normr(intensities);
 
-elseif strcmp(normalized,'no')
-    norm_intensities=intensities;
-
-elseif strcmp(normalized,'minmax')
-    for i = 1:size(intensities,1)
-        for j=1:size(intensities,2)
-            norm_intensities(i,j)= (intensities(i,j)-min(intensities(i,:))/ (max(intensities(i,:)-min(intensities(i,:)))));
-        end
-   
-    end
-elseif strcmp(normalized,'euclidian')
-    norm_intensities(:,:)=normalize(intensities,2,'norm');
-
-end
-
-%norm_intensities=weight_intensities(norm_intensities,combos);
+[ident,centroids,sumd,alldistances]= kmeans(norm_intensities, 2,'Replicates',100,'MaxIter',10000);
 
 
-[ident,centroids,sumd,alldistances]= kmeans(norm_intensities, nclust,'Replicates',100,'MaxIter',10000);
+
 %% OUTPUT SILHOUETTE SCORES
 
 silhouettes=get_silhouettes(alldistances,ident);
-
 group1=norm_intensities(ident==1,:);
-
 group2= norm_intensities(ident==2,:);
 
-
 if mean(group1(:,1)) > mean(group2(:,1))
-    g1_ident='mcherry';
-    g2_ident='tdtomato';
+    g1_ident='mCherry';
+    g2_ident='tdTomato';
 else
-    g1_ident='tdtomato';
-    g2_ident='mcherry';
+    g1_ident='tdTomato';
+    g2_ident='mCherry';
 
 end
+
 ident_order={g1_ident,g2_ident};
 
-%%
-figure()
+%% MAKE FIGURE DISPLAYING WHICH CELLS WERE SORTED INTO WHICH CLUSTER 
+
+figure('Color','w')
 imshow(mean_image);
 caxis([0 mean(mean(mean_image))*4])
 hold on 
-shiftx=5;
-shifty=5;
-for i = 1: size(cellocs,3)
-    [cury,curx]=find(cellocs(:,:,i));
+textshiftx=5;
+textshifty=5;
+
+for i = 1: size(red_cellocs,3)
+    [cury,curx]=find(red_cellocs(:,:,i));
     
-        if ident(i)==1 && strcmp(g1_ident,'mcherry')
+        if ident(i)==1 && strcmp(g1_ident,'mCherry')
                 hold on 
                 plot(curx,cury,'.',"Color",'r')
-                text(mean(curx)+shiftx,mean(cury)+shifty,num2str(red_idx(i)),'Color','r')
+                text(mean(curx)+textshiftx,mean(cury)+textshifty,num2str(red_idx(i)),'Color','r')
                 hold off
                             
-        elseif ident(i)==1 && strcmp(g1_ident,'tdtomato')
+        elseif ident(i)==1 && strcmp(g1_ident,'tdTomato')
                 hold on; 
                 plot(curx,cury,'.',"Color",'g')
-                text(mean(curx)+shiftx,mean(cury)+shifty,num2str(red_idx(i)),'Color','g')
+                text(mean(curx)+textshiftx,mean(cury)+textshifty,num2str(red_idx(i)),'Color','g')
                 hold off
            
-        elseif ident(i)==2 && strcmp(g2_ident,'mcherry')
+        elseif ident(i)==2 && strcmp(g2_ident,'mCherry')
                 hold on 
                 plot(curx,cury,'.',"Color",'r')
-                text(mean(curx)+shiftx,mean(cury)+shifty,num2str(red_idx(i)),'Color','r')
+                text(mean(curx)+textshiftx,mean(cury)+textshifty,num2str(red_idx(i)),'Color','r')
                 hold off 
 
-        elseif ident(i)==2 && strcmp(g2_ident,'tdtomato')
+        elseif ident(i)==2 && strcmp(g2_ident,'tdTomato')
                 hold on
                 plot(curx,cury,'.',"color",'g')
-                text(mean(curx)+shiftx,mean(cury)+shifty,num2str(red_idx(i)),'Color','g')
+                text(mean(curx)+textshiftx,mean(cury)+textshifty,num2str(red_idx(i)),'Color','g')
                 hold off 
         end
   
 end
 
-
 title(t);
 subtitle('mcherry = red || tdtomato= green');
 
-%% plot intensity graphs for each cell in each cluster 
+%% PLOT INTENSITIES BY CLUSTER 
 
-figure();clf;
+figure('Color','w');
 hold on
-for clust = 1:nclust
-    subplot(nclust,1,clust)
-
+for clust = 1:2
+    subplot(2,1,clust)
    
     group = norm_intensities(ident==clust,:)';
-    plot(group);
-    string=num2str(clust);
-    title('cluster',string)
-    if strcmp(wave_pock,'pockels')
-        xticks(1:numpocks:size(norm_intensities,2))
-        xticklabels(flatindentities(1:numpocks:end))
-        xline(1:numpocks:size(norm_intensities,2))
-    elseif strcmp(wave_pock,'wavelengths')
-        xticks(1:numwaves:size(norm_intensities,2))
-        xticklabels(flatindentities(1:numwaves:end))
-        xline(1:numwaves:size(norm_intensities,2))
+    plot(group,'LineWidth',1);
+   
+    
+    
+    xticks(1:size(norm_intensities,2))
+    xticklabels(flatwave_identities(1:end))
+    xline(1:size(norm_intensities,2),'LineStyle','--')
+    ylabel('Normalized Intensity')
+
+    if clust==2
+        xlabel ('Wavelength')
     end
+
+ 
     if clust==1
        title(g1_ident)
     else
@@ -124,14 +112,11 @@ for clust = 1:nclust
 
 end
 sgtitle(t)
-hold off
 
 
+%% CHANGE IDENTITY SO THAT MCHERRY = 1
 
-
-%% change ident so that mcherry=1 
-
-if strcmp(ident_order{1},'tdtomato')
+if strcmp(ident_order{1},'tdTomato')
     for id= 1:length(ident)
         
         if ident(id)==1
@@ -142,8 +127,18 @@ if strcmp(ident_order{1},'tdtomato')
     end
 end
 
+%% MAKE STRUCTURE
 
-used_intensities=norm_intensities;
+
+fullD_results.ident=ident; 
+fullD_results.centroids=centroids; 
+fullD_results.sumd=sumd; 
+fullD_results.alldistances=alldistances; 
+fullD_results.silhouettes=silhouettes; 
+
+
+
+
 end
 
 

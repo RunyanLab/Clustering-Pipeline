@@ -1,5 +1,32 @@
-function [red_wavelength_stack,Fall,redcell_idx,wsImage,wsFall,rcFall,mcherry_coords,tdtom_coords,mcherry_spectra,tdtom_spectra] = load_reg_tif_wavelength_rev(mouse,date,pockels,wavelengths,xtrafolder,servernum)
+function [red_wavelength_stack,Fall,redcell_vect_init,wsFall] = load_reg_tif_wavelength_rev(info)
+% Function that loads the Fall.mat files from functional data, redcell-only
+% suite2p,and wavelength series suite2p. Also loads the reg_tif generated
+% by suite2p for the wavelength series
+
+%INPUTS: 
+    % info: structure containing all dataset info
+
+%OUTPUTS: 
+    % red_wavelength_stack: stack of arrays organized as pockel x
+    % wavelength x Xpix x Ypix  
+    % 
+    % Fall: .mat file for the functional imaging data
+    %
+    % redcell_vect_init: initial vector indicating which cells contain one
+    % of the two red fluorophores 
+    %
+    % wsFall: .mat output for the wavelength series 
+
+
 warning('off','all')
+
+%% Unpack variables from info structure 
+mouse=info.mouse; 
+date=info.date; 
+pockels=info.pockels; 
+wavelengths=info.total_wavelengths; 
+%xtrafolder=info.xtrafolder; 
+servernum=info.servernum; 
 
 % LOAD_REG_TIF_WAVELENGTH loads suite2p registered tifs saved inside
 % '...mouse\date\W-series\suite2p\plane0\reg_tif\'
@@ -8,50 +35,29 @@ warning('off','all')
 
 %REV indicates that the red_wavelenghth_stack is organized taking all
 %wavelengths at one pockel 
-%% first handle loading spectra, giving coordinates
-if ismac
-    mcherry_spectra=readtable('/Volumes/Runyan2/Christian/Code/PC_control data/mcherry_spectra.csv');
-    tdtom_spectra=readtable('/Volumes/Runyan2/Christian/Code/PC_control data/tdtomato_spectra.csv');
-else
-    mcherry_spectra=readtable('Y:\Christian\Code\PC_control data\mcherry_spectra.csv');
-    tdtom_spectra=readtable('Y:\Christian\Code\PC_control data\tdtomato_spectra.csv');
-end
-
-
-tdtom_coords=nan(2,length(wavelengths));
-mcherry_coords=nan(2,length(wavelengths));
-
-for i=1:length(wavelengths)
-    tdtom_coords(1,i)=find(tdtom_spectra.wavelength==wavelengths(i));
-    mcherry_coords(1,i)=find(tdtom_spectra.wavelength==wavelengths(i));
-    tdtom_coords(2,i)=tdtom_spectra.tdTomato2p(tdtom_coords(1,i));
-    mcherry_coords(2,i)=mcherry_spectra.mCherry2p(mcherry_coords(1,i));
-end
-
-
 
 %% load Fall for functional data 
 if ismac
-    base_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/suite2p/plane0/Fall.mat');
+    base_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/suite2p/plane0/Fall.mat');
 else
-    if servernum==2
+    try 
         base_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
-    elseif servernum==3
+    catch
         base_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
     end
 
 end 
 
+Fall = load(base_directory);
 
-
-Fall = load(base_directory);%('Y:\Connie\2p_results\EC1-1R\2021-10-27\suite2p\plane0\Fall.mat');
 %% Load load rcFall 
+
 if ismac
-    redcell_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/suite2p-redcells/plane0/Fall.mat');
+    redcell_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/suite2p-redcells/plane0/Fall.mat');
 else
-    if servernum==2
+    try
         redcell_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
-    elseif servernum==3
+    catch
         redcell_directory= strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
     end
 
@@ -61,16 +67,17 @@ rcFall=load(redcell_directory);
 %%
 redcells=rcFall.iscell(:,1); 
 redcells(Fall.iscell(:,1)==0)= 0; 
-redcell_idx=redcells==1; 
+redcell_vect_init=redcells==1; 
 
 
-%% load wsFall 
+
+%% LOAD wsFall
 if ismac
-    wsbase_directory= strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/Fall.mat');
+    wsbase_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/Fall.mat');
 else
-    if servernum==2
+    try
         wsbase_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
-    elseif servernum==3
+    catch
         wsbase_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
     end
 
@@ -80,21 +87,13 @@ end
 
 wsFall=load(wsbase_directory); 
 
-
-try
-    wsImage=wsFall.ops.meanImg_chan2;
-catch
-    wsImage=wsFall.ops.meanImgE;
-end
-
-
-%% next load reg_tif
+%% LOAD reg_tif
 
 if ismac
-    if servernum==3
-        base_directory =  strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
-    elseif servernum==2
-        base_directory =  strcat('/Volumes/Runyan',num2str(servernum),'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
+    try
+        base_directory =  strcat('/Volumes/Runyan2'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
+    catch
+        base_directory =  strcat('/Volumes/Runyan3'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
     end
 
 else
@@ -106,7 +105,7 @@ else
 
 end
 
-
+%% MAKE red_wavelength_stack
 d = dir(base_directory);
 num_files = length(d);
 num_x_pixels = 512;
@@ -133,7 +132,7 @@ for f = [length(pockels)+1]:2:[total_780_1100_images*2+length(pockels)]
         catch
             all_image(count,:,:) = imread([base_directory '/' 'file000_chan1.tif'],f);
         end
-    else
+    elseif ispc
         try 
             all_image(count,:,:) = imread([base_directory '\' 'file000_chan0.tif'],f);
         catch
@@ -155,7 +154,7 @@ for f = 1:length(pockels)
             all_image(f*17-17+14,:,:) = imread([base_directory '/' 'file000_chan1.tif'],f);
         end
 
-    else
+    elseif ispc
         try
             all_image(f*17-17+14,:,:) = imread([base_directory '\' 'file000_chan0.tif'],f); 
         catch
@@ -171,7 +170,7 @@ for p = 1:length(pockels)
     end
 end
 
-red_wavelength_stack(:,[13 15],:,:)=[];
+red_wavelength_stack(:,[13 15],:,:)=[]; % remove blank wavelengths 
 
 % making plot of the mean of all wavelengths
 summed_image = squeeze(sum(all_image));
@@ -179,6 +178,7 @@ summed_image = summed_image./max(summed_image(:));
 
 shortwv_image=squeeze(sum(all_image(1:10,:,:),1));
 shortwv_image=shortwv_image./max(shortwv_image(:));
-% 
 
+
+% 
 end
