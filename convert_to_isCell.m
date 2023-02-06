@@ -1,4 +1,4 @@
-function [cell_stat,red_cell_vect,Fall]= convert_to_isCell(Fall,red_cell_vect)
+function [cell_stat,redcell_vect,Fall]= convert_to_isCell(Fall,redcell_vect)
 
 % convert stat and redcell_vect to be in isCell==1 coordinates 
 
@@ -10,9 +10,9 @@ iscell=Fall.iscell;
 
 cell_stat=stat(iscell(:,1)==1); % reduce stat to only iscells  
 
-red_cell_vect=red_cell_vect(iscell(:,1)==1);
+redcell_vect=redcell_vect(iscell(:,1)==1);
 
-Fall.red_cell_vect=red_cell_vect; 
+Fall.redcell_vect=redcell_vect; 
 
 end
 

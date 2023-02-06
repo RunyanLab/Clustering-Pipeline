@@ -1,7 +1,7 @@
 function[img]=get_images(wsFall,Fall,red_wavelength_stack)
 
 
-wsRef=wsFall.ops.meanImgE;
+wsRef=wsFall.ops.meanImg;
  %w-series ref image (can make whatever you want)
 
 fRef=Fall.ops.meanImg_chan2; % functionla ref image

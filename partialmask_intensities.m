@@ -1,4 +1,5 @@
 function [intensities,red_cellocs]= partialmask_intensities(threshold,cell_stat,red_wavelength_stack,final_redidx,max_proj,shift)
+%% MKE VARIABLES
 
 red_stat=cell_stat(final_redidx);
 xshift=shift(1); 
@@ -15,7 +16,7 @@ for i = 1 : numred
     
     mask=zeros(512,512);
     curstat=red_stat{i};
-    xpix=curstat.xpix(curstat.soma_crop==1);
+    xpix=curstat.xpix(curstat.soma_crop==1); %include only the soma for calculating the intensity
     ypix=curstat.ypix(curstat.soma_crop==1);
     
     xpix=xpix+xshift;
@@ -25,7 +26,7 @@ for i = 1 : numred
              curxpix=xpix(k);
              curypix=ypix(k);
              if curxpix <512 && curypix<512 % if any pixels have been cutoff by re-registration, just dont include them 
-                mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 bc python to MATLAB
+                mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 to convert from python to MATLAB
              end
              
       end
@@ -64,14 +65,10 @@ npocks=size(red_wavelength_stack,1);
 nwaves=size(red_wavelength_stack,2);
 
 
-intensities=zeros(length(red_stat),npocks*nwaves);% intensities is a w, p, idx matrix for avg brightness of each red cell
+intensities=zeros(length(red_stat),npocks*nwaves);% intensities is a  wavelength x pockel x idx matrix for avg brightness of each red cell
 
 
 temp=zeros(npocks,nwaves);
-
-
-%%
-
 
 for idx = 1:length(red_stat)
 

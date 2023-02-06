@@ -7,16 +7,18 @@ function[converted_coord]=convert_coordinate(idx,conv_type,Fall)
 %conversion is denoted by conv_type
 
 %** RED_CELL_VECT IS A VECTOR OF LENGTH sum(ISCELL==1) 
+% WILL NOT WORK AFTER EXCLUSION STEP
+
 
 %  COORDINATES ALWAYS IN MATLAB COORDINATES, SUBTRACT 1 FOR S2P
 converted_coord=nan(length(idx),1);
 
 
-stat=Fall.stat;
+
 iscell=Fall.iscell(:,1);
 red_cell_vect=Fall.redcell_vect;
 
-s2p_all=1:length(stat); % s2p coordinates
+s2p_all=1:length(iscell); % s2p coordinates
 
 s2plist_cells=find(iscell==1); % s2p coordinates where iscell==1
 cellist_red=find(red_cell_vect==1); % iscell coordinates where isred==1

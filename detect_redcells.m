@@ -82,21 +82,21 @@ figure('Color','w')
 subplot(1,3,1)
 plot_mask_boundaries(longImage,img_thresholds(1),check_stat,check_green,'g',xshift,yshift)
 
-title('long wavelength image')
+title('Long Wavelength Image')
 
 %% SHORT IMAGE
 
 subplot(1,3,2)
 plot_mask_boundaries(shortImage,img_thresholds(2),check_stat,check_green,'g',xshift,yshift)
 
-title('short wavelength image')
+title('Short Wavelength Image')
 
 %% OTHER IMAGE
 subplot(1,3,3)
 
 plot_mask_boundaries(thirdImage,img_thresholds(3),check_stat,check_green,'g',xshift,yshift)
 
-title('third image')
+title('Summed Projection')
 
 
-sgtitle('Green Masks to Check')
+sgtitle('Candidate Red Cells Currently Classified as Pyramidal')

@@ -17,13 +17,9 @@ load('combos.mat')
 
 [red_wavelength_stack,Fall,redcell_vect_init,wsFall] = load_reg_tif_wavelength_rev(info);
 
-
-
 %% 3. GET ISCELL COORDINATES/ GET IMAGES
-%the coordinates for cells are in reference to just those classified as
-%iscell == 1 in the functional imaging 
-%sometime the coordinates can also be just in terms of red_cells
-%you can use convert_coordinate to convert between the two 
+% Remove Fall.iscell==0 from coordinates 
+
 [cell_stat,redcell_vect,Fall]= convert_to_isCell(Fall,redcell_vect_init);
 [img]=get_images(wsFall,Fall,red_wavelength_stack); 
 
@@ -31,21 +27,23 @@ load('combos.mat')
 % registration is different between w-series s2p file and functional s2p
 % file, so need to correct for where masks are located 
 [shift]=shift_wseries(img);
+
+img_brightness=4; 
 check_shift(redcell_vect,cell_stat,img,shift) % make sure that re-registration is effective
 
 %% 5. CHECK MANUALLY LABELED RED CELLS 
 % * this is a to check that you haven't left out any red cells in your s2p red_cells file 
 % * plots all of the green masks that have over a certain mean threshold 
 
-img_thresholds=[7 7 7]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
-percent=10; 
+img_brightness=[7 7 7]; % change this if you want to change brightness of either of 3 images (higher number = brighter(lower threshold))
+percent=10; % "percent" is the percentile of the mean intentsity of red cells. candidate red cells currently classified as greedn above that value will be shown  
 
-detect_redcells(percent,img,img_thresholds,redcell_vect,cell_stat,shift);% "percent" is the percentile of the mean intentsity of red cells. candidate red cells currently classified as greedn above that value will be shown  
+detect_redcells(percent,img,img_brightness,redcell_vect,cell_stat,shift);
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
 add= [286 282 247 283 79 65  194 306 51];
 subtract=[311];
-uncertain=[]; % delete cells if it is unclear or not that they are red 
+uncertain=[]; % delete cells if it is unclear or not that they are red (should not be in red_vect) 
 
 [final_red_vect]=add_redcells(redcell_vect,add);
 [final_red_vect]=sub_redcells(final_red_vect,subtract);
@@ -55,8 +53,12 @@ check_redcells(final_red_vect,cell_stat,img,thresholds,shift)
 
 %% 7. RESTRICT MASKS, GET INTENSITIES, AND AVERAGE ACROSS POWERS
 
-[intensities,red_cellocs]= partialmask_intensities(70,cell_stat,red_wavelength_stack,final_red_vect,img.max_proj,shift);
+pixel_exclusion_prctile= 30; 
+
+[intensities,red_cellocs]= partialmask_intensities(pixel_exclusion_prctile,cell_stat,red_wavelength_stack,final_red_vect,img.max_proj,shift);
 [meanwave_intensities,medwave_intensities,flatwave_identities]=avg_acrosspocks(intensities,info); 
+
+
 
 %% 8. DO CLUSTERING ON FULL DATA AND ON COMBINATIONS OF DATA 
 
@@ -77,17 +79,17 @@ examine_outliers(cell_stat,final_red_vect,chosen_combination,thresh,sub_intensit
 
 exclude_redids=[6 45 66 ];
 
-[final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,final_red_vect,combination_results.identities{chosen_combination},meanwave_intensities,combination_results.all_silhouettes{chosen_combination},Fall); 
-[final_ids]=make_final_ids(final_red_vect_ex,final_ident); 
+[final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,uncertain,final_red_vect,combination_results.identities{chosen_combination},meanwave_intensities,combination_results.all_silhouettes{chosen_combination},Fall); 
+[cellids]=make_final_ids(final_red_vect_ex,final_ident); 
 Fall.redcell_vect=final_red_vect_ex;
 
-%% 11. MAKE STRUCTURE
+%% 11. MAKE STRUCTURE TO SAVE INFORMATION
 clustering_info.mouseID=[info.mouse,' ',info.date];
-clustering_info.cellids=final_ids;
+clustering_info.cellids=cellids;
 clustering_info.redvect=final_red_vect_ex;
 clustering_info.excluded=excluded_cellids;
 clustering_info.used_silhouettes=final_silhouettes;
-clustering_info.all_silhouettes=combination_results.all_silhouettes;
+
 clustering_info.combinations=combos;
 clustering_info.Fall=Fall;
 clustering_info.chosen_combination=chosen_combination; 
@@ -97,11 +99,10 @@ clustering_info.all_identities=identities;
 clustering_info.uncertain=uncertain; 
 clustering_info.added=add; 
 clustering_info.subtracted=subtract; 
+clustering_info.img=img; 
 
 %need to add intensities and identities to track the final used cells 
 %% 12. FINAL CHECK 
-
-
 check_redcells(final_red_vect_ex,cell_stat,img,thresholds,shift)
 
 %% 13. SAVE STRUCTURE 

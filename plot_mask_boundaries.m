@@ -1,4 +1,4 @@
-function []=plot_mask_boundaries(backgroundImage,threshold,stat,index,color,varargin)
+function []=plot_mask_boundaries(backgroundImage,img_brightness,stat,index,color,varargin)
 % Function that takes the mask coordinates and x/y shift if they are needed
 % and plots them over a background image 
 
@@ -7,14 +7,27 @@ function []=plot_mask_boundaries(backgroundImage,threshold,stat,index,color,vara
 % IF PLOTTING ON FUNCTIONAL DATA AND NOT W-SERIES REG TIF, XSHIFT AND
 % YSHIFT SHOULD BE 0
 
+display_type='imshow'; % default to using imshow
+
 xshift=varargin{1};
 yshift=varargin{2};
 
+if length(varargin)>2
+    display_type=varargin{3}; % if there is an argument for dipslay type, update variable
+end
+
+if strcmp(display_type,'imagesc') % use imshow by default, but can specify imagesc
+    imagesc(backgroundImage)
+    caxis([0 max(max(backgroundImage))/img_brightness])
+elseif strcmp(display_type,'imshow')
+    imshow(backgroundImage)
+    caxis([0 max(max(backgroundImage))/img_brightness])
+end
 
 
 
-imshow(backgroundImage)
-caxis([0 max(max(backgroundImage))/threshold])
+
+
 hold on 
 
 
