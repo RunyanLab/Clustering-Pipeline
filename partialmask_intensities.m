@@ -25,7 +25,7 @@ for i = 1 : numred
       for k=1:length(xpix)
              curxpix=xpix(k);
              curypix=ypix(k);
-             if curxpix <512 && curypix<512 % if any pixels have been cutoff by re-registration, just dont include them 
+             if curxpix <512 && curypix<512 && curxpix>0 && curypix>0 % if any pixels have been cutoff by re-registration, just dont include them 
                 mask(curypix+1,curxpix+1)=1;%(curypix,curxpix) to get correct location; add +1 to convert from python to MATLAB
              end
              

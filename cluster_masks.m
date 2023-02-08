@@ -95,7 +95,7 @@ for clust = 1:2
     
     xticks(1:size(norm_intensities,2))
     xticklabels(flatwave_identities(1:end))
-    xline(1:size(norm_intensities,2),'LineStyle','--')
+    %xline(1:size(norm_intensities,2),'LineStyle','--')
     ylabel('Normalized Intensity')
 
     if clust==2

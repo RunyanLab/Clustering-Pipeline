@@ -51,7 +51,7 @@ plot(normc(selected_intensities),'LineWidth',1.3);
 
 xticks(1:size(intensities,2))
 xticklabels(flatindentities(1:end))
-xline(1:size(intensities,2),"HandleVisibility",'off','LineStyle','--')
+%xline(1:size(intensities,2),"HandleVisibility",'off','LineStyle','--')
 legend(leg);
 xlabel('Wavelengths')
 ylabel('Normalized Intensity')

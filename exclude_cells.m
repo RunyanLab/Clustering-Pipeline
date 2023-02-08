@@ -10,6 +10,7 @@ cellids_to_exclude=find(final_red_vect==1); % get list of red cells in iscell==1
 
 cellids_to_exclude=cellids_to_exclude(exclude_redids);%list of cells to be excluded 
 
+cellids_to_exclude=[uncertain,cellids_to_exclude]; 
 final_red_vect(cellids_to_exclude,:)=[]; 
 final_ident(exclude_redids,:)=[];
 final_intensities(exclude_redids,:)=[];
@@ -25,7 +26,7 @@ end
 
 
 
-iscell(uncertain)=0;
+
 iscell(s2pidstoexclude)=0; 
 
 final_iscell=iscell;

@@ -1,6 +1,6 @@
 %% 1. ENTER DATASET INFORMATION
-info.mouse = 'GS2-1L';
-info.date = '2022-11-21';
+info.mouse = 'GE4-1L';
+info.date = '2022-10-20';
 info.servernum=2;
 info.pockels=300:100:500; 
 info.subset_pockels=1:length(info.pockels); % vector of pockels to actually include in clustering 
@@ -41,9 +41,9 @@ percent=10; % "percent" is the percentile of the mean intentsity of red cells. c
 detect_redcells(percent,img,img_brightness,redcell_vect,cell_stat,shift);
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
-add= [286 282 247 283 79 65  194 306 51];
-subtract=[311];
-uncertain=[]; % delete cells if it is unclear or not that they are red (should not be in red_vect) 
+add= [95,131,75,57,64,41,23,196,164,212,196,178,135,62,151,161,152,202,232,247,112];
+subtract=[197];
+uncertain=[238,258]; % delete cells if it is unclear or not that they are red (should not be in red_vect) 
 
 [final_red_vect]=add_redcells(redcell_vect,add);
 [final_red_vect]=sub_redcells(final_red_vect,subtract);
@@ -53,7 +53,7 @@ check_redcells(final_red_vect,cell_stat,img,thresholds,shift)
 
 %% 7. RESTRICT MASKS, GET INTENSITIES, AND AVERAGE ACROSS POWERS
 
-pixel_exclusion_prctile= 30; 
+pixel_exclusion_prctile= 30; %usually set to 30
 
 [intensities,red_cellocs]= partialmask_intensities(pixel_exclusion_prctile,cell_stat,red_wavelength_stack,final_red_vect,img.max_proj,shift);
 [meanwave_intensities,medwave_intensities,flatwave_identities]=avg_acrosspocks(intensities,info); 
@@ -77,7 +77,7 @@ examine_outliers(cell_stat,final_red_vect,chosen_combination,thresh,sub_intensit
 
 %% 10. EXCLUDE CELLS, GET FINAL VECTORS TO PUT IN STRUCTURE 
 
-exclude_redids=[6 45 66 ];
+exclude_redids=[]; %make sure it is in red index
 
 [final_red_vect_ex,final_ident,final_intensities,final_silhouettes,excluded_cellids,final_iscell]=exclude_cells(exclude_redids,uncertain,final_red_vect,combination_results.identities{chosen_combination},meanwave_intensities,combination_results.all_silhouettes{chosen_combination},Fall); 
 [cellids]=make_final_ids(final_red_vect_ex,final_ident); 
@@ -95,7 +95,7 @@ clustering_info.Fall=Fall;
 clustering_info.chosen_combination=chosen_combination; 
 clustering_info.iscell=final_iscell; 
 clustering_info.intensities=final_intensities;
-clustering_info.all_identities=identities; 
+clustering_info.all_identities=info.identities; 
 clustering_info.uncertain=uncertain; 
 clustering_info.added=add; 
 clustering_info.subtracted=subtract; 
@@ -106,5 +106,20 @@ clustering_info.img=img;
 check_redcells(final_red_vect_ex,cell_stat,img,thresholds,shift)
 
 %% 13. SAVE STRUCTURE 
-save(['Y:\Christian\Processed Data\dual_red\',info.mouse,'_',info.date,'.mat'],'clustering_info','-v7.3')
+mkdir(['Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\dual_red\'])
+cd(['Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\dual_red\'])
+save('clustering_info','clustering_info')
 
+%% SAVE TDTOM, MCHERRY, PYR
+tdtom_cells = find( clustering_info.cellids == 2); 
+mcherry_cells = find( clustering_info.cellids == 1);
+pyr_cells = find( clustering_info.cellids == 0)'; 
+mkdir(strcat('Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\red_variables\'));
+%mkdir(strcat('\\136.142.49.216\runyan2\Connie\ProcessedData\',mouse,'\',date,'\red_variables\'));
+cd(strcat('Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\red_variables\'));
+    save('tdtom_cells','tdtom_cells');
+    save('mcherry_cells','mcherry_cells');
+    save('pyr_cells','pyr_cells'); 
+%save(['Y:\Connie\ProcessedData\',mouse,'\',date,'\red_variables\'],'tdtom_cells', 'mcherry_cells', 'pyr_cells')
+length(mcherry_cells)
+length(tdtom_cells)
