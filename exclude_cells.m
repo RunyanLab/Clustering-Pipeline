@@ -31,7 +31,7 @@ iscell(s2pidstoexclude)=0;
 
 final_iscell=iscell;
 
-excluded_cellids=[cellids_to_exclude,uncertain];
+excluded_cellids=unique([cellids_to_exclude,uncertain]);
 
 
 
