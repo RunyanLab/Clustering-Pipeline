@@ -37,33 +37,38 @@ servernum=info.servernum;
 %wavelengths at one pockel 
 
 %% load Fall for functional data 
-if ismac
-    base_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/suite2p/plane0/Fall.mat');
-else
-    try 
-        base_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
-    catch
-        base_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
-    end
+disp('Select the folder where the suite2p functional folder is saved...');
+baseFolder = uigetdir;
 
-end 
+% if ismac
+%     base_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/suite2p/plane0/Fall.mat');
+% else
+%     try 
+%         base_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
+%     catch
+%         base_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p\plane0\Fall.mat');
+%     end
+% 
+% end 
 
-Fall = load(base_directory);
+Fall = load(strcat(baseFolder,'/plane0/Fall.mat'));
 
 %% Load load rcFall 
+disp('Select the folder where the suite2p-redcells folder is saved...');
+baseFolderRed = uigetdir;
 
-if ismac
-    redcell_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/suite2p-redcells/plane0/Fall.mat');
-else
-    try
-        redcell_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
-    catch
-        redcell_directory= strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
-    end
+% if ismac
+%     redcell_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/suite2p-redcells/plane0/Fall.mat');
+% else
+%     try
+%         redcell_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
+%     catch
+%         redcell_directory= strcat('X:\Connie\RawData\',mouse,'\',date,'\suite2p-redcells\plane0\Fall.mat');
+%     end
+% 
+% end 
 
-end 
-
-rcFall=load(redcell_directory);
+rcFall=load(strcat(baseFolderRed,'/plane0/Fall.mat'));
 %%
 redcells=rcFall.iscell(:,1); 
 redcells(Fall.iscell(:,1)==0)= 0; 
@@ -72,39 +77,43 @@ redcell_vect_init=redcells==1;
 
 
 %% LOAD wsFall
-if ismac
-    wsbase_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/Fall.mat');
-else
-    try
-        wsbase_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
-    catch
-        wsbase_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
-    end
+disp('Select the folder where the suite2p Wseries folder is saved...');
+wsbase_directory = uigetdir;
+
+% if ismac
+%     wsbase_directory= strcat('/Volumes/Runyan2/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/Fall.mat');
+% else
+%     try
+%         wsbase_directory =  strcat('Y:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
+%     catch
+%         wsbase_directory =  strcat('X:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\Fall.mat');
+%     end
+% 
+% 
+% end 
 
 
-end 
-
-
-wsFall=load(wsbase_directory); 
+wsFall=load(strcat(wsbase_directory,'/plane0/Fall.mat'));
 
 %% LOAD reg_tif
 
-if ismac
-    try
-        base_directory =  strcat('/Volumes/Runyan2'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
-    catch
-        base_directory =  strcat('/Volumes/Runyan3'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
-    end
+% if ismac
+%     try
+%         base_directory =  strcat('/Volumes/Runyan2'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
+%     catch
+%         base_directory =  strcat('/Volumes/Runyan3'/Connie/RawData/',mouse,'/',date,'/W-series/suite2p/plane0/reg_tif');
+%     end
+% 
+% else
+%    if servernum==2
+%         base_directory= strcat('Y:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\reg_tif');
+%    elseif servernum==3
+%         base_directory=strcat('X:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\reg_tif');
+%     end
+% 
+% end
 
-else
-   if servernum==2
-        base_directory= strcat('Y:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\reg_tif');
-   elseif servernum==3
-        base_directory=strcat('X:\Connie\RawData\',mouse,'\',date,'\W-series\suite2p\plane0\reg_tif');
-    end
-
-end
-
+base_directory = strcat(wsbase_directory,'/plane0/reg_tif');
 %% MAKE red_wavelength_stack
 d = dir(base_directory);
 num_files = length(d);
