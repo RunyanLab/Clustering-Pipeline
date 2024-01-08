@@ -1,9 +1,11 @@
 %% 1. ENTER DATASET INFORMATION
-info.mouse = 'GE4-1L';
-info.date = '2022-10-20';
-info.servernum=2;
+addpath(genpath('C:\Code\Github\Clustering-Pipeline'))
+info.mouse = 'HA1-00';
+info.date = '2023-06-29';
+info.servernum='V:';
 info.pockels=300:100:500; 
 info.subset_pockels=1:length(info.pockels); % vector of pockels to actually include in clustering 
+info.savepathstr = '/Connie/ProcessedData/';
 
 info.wavelengths= 780:20:1100;info.wavelengths([13,15])=[]; % wavelengths 
 info.total_wavelengths=780:20:1100; 
@@ -41,9 +43,9 @@ percent=10; % "percent" is the percentile of the mean intentsity of red cells. c
 detect_redcells(percent,img,img_brightness,redcell_vect,cell_stat,shift);
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
-add= [95,131,75,57,64,41,23,196,164,212,196,178,135,62,151,161,152,202,232,247,112];
-subtract=[197];
-uncertain=[238,258]; % delete cells if it is unclear or not that they are red (should not be in red_vect) 
+add= [6,123,31,10];
+subtract=[];
+uncertain=[]; % delete cells if it is unclear or not that they are red (should not be in red_vect) 
 
 [final_red_vect]=add_redcells(redcell_vect,add);
 [final_red_vect]=sub_redcells(final_red_vect,subtract);
@@ -106,20 +108,20 @@ clustering_info.img=img;
 check_redcells(final_red_vect_ex,cell_stat,img,thresholds,shift)
 
 %% 13. SAVE STRUCTURE 
-mkdir(['Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\dual_red\'])
-cd(['Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\dual_red\'])
+mkdir([info.servernum,info.savepathstr,info.mouse,'/',info.date,'/dual_red/'])
+cd([info.servernum,info.savepathstr,info.mouse,'/',info.date,'/dual_red/'])
 save('clustering_info','clustering_info')
+
 
 %% SAVE TDTOM, MCHERRY, PYR
 tdtom_cells = find( clustering_info.cellids == 2); 
 mcherry_cells = find( clustering_info.cellids == 1);
 pyr_cells = find( clustering_info.cellids == 0)'; 
-mkdir(strcat('Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\red_variables\'));
-%mkdir(strcat('\\136.142.49.216\runyan2\Connie\ProcessedData\',mouse,'\',date,'\red_variables\'));
-cd(strcat('Y:\Connie\ProcessedData\',info.mouse,'\',info.date,'\red_variables\'));
+mkdir(strcat(info.servernum,info.savepathstr,info.mouse,'/',info.date,'/red_variables/'));
+cd(strcat(info.servernum,info.savepathstr,info.mouse,'/',info.date,'/red_variables/'));
     save('tdtom_cells','tdtom_cells');
     save('mcherry_cells','mcherry_cells');
     save('pyr_cells','pyr_cells'); 
-%save(['Y:\Connie\ProcessedData\',mouse,'\',date,'\red_variables\'],'tdtom_cells', 'mcherry_cells', 'pyr_cells')
+
 length(mcherry_cells)
 length(tdtom_cells)
