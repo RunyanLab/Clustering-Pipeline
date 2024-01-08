@@ -10,7 +10,7 @@ else
     titlestr=[mouse,' ',date];
 end
 
-fullstring={titlestr,normalization};
+fullstring={titlestr};
 %% statistics on silhouette scores
 
 stdev=std(silhouettes);
