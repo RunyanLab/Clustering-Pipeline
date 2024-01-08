@@ -112,7 +112,6 @@ mkdir([info.servernum,info.savepathstr,info.mouse,'/',info.date,'/dual_red/'])
 cd([info.servernum,info.savepathstr,info.mouse,'/',info.date,'/dual_red/'])
 save('clustering_info','clustering_info')
 
-
 %% SAVE TDTOM, MCHERRY, PYR
 tdtom_cells = find( clustering_info.cellids == 2); 
 mcherry_cells = find( clustering_info.cellids == 1);
@@ -125,3 +124,6 @@ cd(strcat(info.servernum,info.savepathstr,info.mouse,'/',info.date,'/red_variabl
 
 length(mcherry_cells)
 length(tdtom_cells)
+%% exclude uncertain and excluded cells from dff and deconv (saving original as no_excluded)
+%assumes variable names are 'dff' and 'z_dff' and 'deconv'
+exclude_uncertain_cells(info,clustering_info);
