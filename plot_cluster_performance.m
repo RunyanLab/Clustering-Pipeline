@@ -4,7 +4,7 @@ mouse=info.mouse;
 date=info.date;
 
 
-if length(xtrafolder)>1
+if ismember('xtrafolder',fieldnames(info))
     titlestr=[mouse,' ',date,' ',xtrafolder];
 else
     titlestr=[mouse,' ',date];
