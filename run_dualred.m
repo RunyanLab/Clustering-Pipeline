@@ -1,8 +1,8 @@
 %% 1. ENTER DATASET INFORMATION
 addpath(genpath('C:\Code\Github\Clustering-Pipeline'))
-info.mouse = 'HA1-00';
-info.date = '2023-06-29';
-info.servernum='V:';
+info.mouse = 'HE4-1L1R';
+info.date = '2023-08-21';
+info.servernum='W:';
 info.pockels=300:100:500; 
 info.subset_pockels=1:length(info.pockels); % vector of pockels to actually include in clustering 
 info.savepathstr = '/Connie/ProcessedData/';
@@ -43,9 +43,9 @@ percent=10; % "percent" is the percentile of the mean intentsity of red cells. c
 detect_redcells(percent,img,img_brightness,redcell_vect,cell_stat,shift);
 
 %% 6. CHOOSE CELLS TO ADD AND SUBTRACT FROM THE RED LIST, THEN ADD/ SUBTRACT RED CELLS FROM LIST AND VIEW FINAL RESULT 
-add= [6,123,31,10];
+add= [184,197];
 subtract=[];
-uncertain=[]; % delete cells if it is unclear or not that they are red (should not be in red_vect) 
+uncertain=[179]; % delete cells if it is unclear or not that they are red (should not be in red_vect) 
 
 [final_red_vect]=add_redcells(redcell_vect,add);
 [final_red_vect]=sub_redcells(final_red_vect,subtract);
@@ -111,6 +111,7 @@ check_redcells(final_red_vect_ex,cell_stat,img,thresholds,shift)
 mkdir([info.servernum,info.savepathstr,info.mouse,'/',info.date,'/dual_red/'])
 cd([info.servernum,info.savepathstr,info.mouse,'/',info.date,'/dual_red/'])
 save('clustering_info','clustering_info')
+save('info','info')
 
 %% SAVE TDTOM, MCHERRY, PYR
 tdtom_cells = find( clustering_info.cellids == 2); 
