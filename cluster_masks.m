@@ -28,7 +28,7 @@ silhouettes=get_silhouettes(alldistances,ident);
 group1=norm_intensities(ident==1,:);
 group2= norm_intensities(ident==2,:);
 
-if mean(group1(:,1)) > mean(group2(:,1))
+if mean(group1(:,1)) > mean(group2(:,1)) %classifies cluster based on first wavelenth (in our case 780nm)
     g1_ident='mCherry';
     g2_ident='tdTomato';
 else
