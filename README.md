@@ -20,7 +20,7 @@ The main code: run_dualred.mat has all the functions used in the order described
 6) Add and/or subtract any red cells as necessary
 7) Restrict masks using a pixel exclusion threshold, get intensities of masks across all wavelenths and powers
 8) Perform k-means clustering on data using all wavelenths and top 25 combinations of wavelenths
-9) Examine outliers with silhouette scores below threshold (0.7)
+9) Examine outliers with silhouette scores below threshold (0.7) and choose combination used for clustering
 10) Determine if you want to exclude any cells (like outliers) from the final vector structure
 11) Use clustering_info structure to save all relevant information including the classified identities of the red cells.
 12) Perform a final check using the mean images to make we were missing no red cells
