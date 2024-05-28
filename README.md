@@ -4,7 +4,7 @@ Original code used in "Potter, Bassi, & Runyan: Simultaneous interneuron labelin
 
 ### Before starting - collect necessary data
 1) For the field of view, collect wavelength series using excitation wavelengths that best separate fluorophores across multiple powers. Averaging across frames is recommended. We typically collect images at regular intervals from 780 nm to 1100 nm, with several excitation laser powers (pockels) at each wavelength.
-2) Process functional data using suite2p with 2 Channels (we used green/GCaMP and red (so that we can use the registered version of the red channel and functional masks from suite2p in the following steps)
+2) Process functional data using suite2p (http://www.suite2p.org) with 2 Channels (we used green/GCaMP and red (so that we can use the registered version of the red channel and functional masks from suite2p in the following steps)
 3) Separate folder that has the Fall.mat file for only selected red cells. To do this copy the functional suite2p folder and save it with a different name, then using the suite2p GUI move all cells that are not red into the not cell category using the red channel images.
 
 ### Getting started 
@@ -25,3 +25,7 @@ The main code: run_dualred.mat has all the functions used in the order described
 11) Use clustering_info structure to save all relevant information including the classified identities of the red cells.
 12) Perform a final check using the mean images to make we were missing no red cells
 13) Save the clustering_info structure in a specific folder
+
+### Contacts for questions 
+Constanza Bassi, cdb66@pitt.edu
+Caroline Runyan, runyan@pitt.edu
