@@ -1,6 +1,6 @@
 # Clustering Pipeline
  
-Original code used in "Simultaneous interneuron labeling reveals cell-type-specific population-level interactions in cortex" to classify mCherry and TdTomato fluorophores. The approach could be used to distinguish any two fluorophores with differing excitation spectra.
+Original code used in "Potter, Bassi, & Runyan: Simultaneous interneuron labeling reveals cell-type-specific population-level interactions in cortex, https://doi.org/10.1101/2023.01.09.523298" to classify mCherry and TdTomato fluorophores. The approach could be used to distinguish any two fluorophores with differing excitation spectra.
 
 ### Before starting - collect necessary data
 1) For the field of view, collect wavelength series using excitation wavelengths that best separate fluorophores across multiple powers. Averaging across frames is recommended. We typically collect images at regular intervals from 780 nm to 1100 nm, with several excitation laser powers (pockels) at each wavelength.
